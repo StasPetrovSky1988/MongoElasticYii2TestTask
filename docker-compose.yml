@@ -1,0 +1,36 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: secret
+      MONGO_INITDB_DATABASE: dbname
+
+    volumes:
+      - mongo_data:/data/db
+
+  opensearch:
+    image: opensearchproject/opensearch:2.18.0
+    container_name: opensearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - plugins.security.disabled=true
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=secretSoLong123
+    ulimits:
+      memlock: -1
+      nofile: 65536
+    volumes:
+      - os_data:/usr/share/opensearch/data
+    ports:
+      - "9200:9200"     # REST API
+      - "9600:9600"     # performance analyzer
+
+volumes:
+  mongo_data:
+  os_data:
+
